@@ -1,27 +1,79 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
+import { Display } from './Components/Display';
+import { Buttons } from './Components/Buttons';
 
-class App extends Component {
-  render() {
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      display: '',
+    }
+    this.handleClick = this.handleClick.bind(this);
+    this.handleKeyPress = this.handleKeyPress.bind(this);
+    this.updateDisplay = this.updateDisplay.bind(this);
+    this.solveEquation = this.solveEquation.bind(this);
+  }
+  
+  componentWillMount() {
+    document.addEventListener('keydown', this.handleKeyPress);
+  }
+  
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.handleKeyPress);
+  }
+  
+  handleKeyPress(event) {
+    console.log(event);
+    if (event.key >= 0 && event.key <=9 || event.key == '/' || event.key == '-') {
+      this.updateDisplay(event.key)
+    }
+    else if (event.shiftKey && event.key === '+' || event.key === '*') {
+      this.updateDisplay(event.key)
+    } 
+    else if (event.key === 'Enter' || event.key === '=' ) {
+      this.solveEquation();
+    }
+    else if (event.key === 'Backspace') {
+      this.setState({
+        display: ''
+      })
+    }
+    
+  }
+  
+  handleClick(event) {
+    if (event.target.classList.contains('number-button') || event.target.classList.contains('operand-button')) {
+      this.updateDisplay(event.target.innerText);
+    }
+    else if (event.target.classList.contains('function-button')) {
+      event.target.id === 'equals' ? this.solveEquation() : this.setState({display: ''})
+    } 
+  }
+  
+  updateDisplay(info) {
+    var newDisplay = this.state.display + info
+      this.setState({
+       display: newDisplay
+      })
+  }
+  
+  solveEquation() {
+    var equation = this.state.display;
+    var result = eval(equation);
+    this.setState({
+      display: result
+    })
+    
+  }
+  
+  render(){
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+      <div className='calculator '>
+        <Display display={this.state.display} />
+        <Buttons handleClick={this.handleClick} />
       </div>
-    );
+    )
   }
 }
 
