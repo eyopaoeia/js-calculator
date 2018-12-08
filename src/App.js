@@ -13,6 +13,7 @@ class App extends React.Component {
     this.handleKeyPress = this.handleKeyPress.bind(this);
     this.updateDisplay = this.updateDisplay.bind(this);
     this.solveEquation = this.solveEquation.bind(this);
+    this.truncateDisplay = this.truncateDisplay.bind(this);
   }
   
   componentWillMount() {
@@ -24,7 +25,7 @@ class App extends React.Component {
   }
   
   handleKeyPress(event) {
-    console.log(event);
+    event.preventDefault();
     if (event.key >= 0 && event.key <=9 || event.key == '/' || event.key == '-') {
       this.updateDisplay(event.key)
     }
@@ -61,10 +62,19 @@ class App extends React.Component {
   solveEquation() {
     var equation = this.state.display;
     var result = eval(equation);
+    this.truncateDisplay(result);
+  }
+
+  truncateDisplay(display) {
+    if (display.toString().length > 14) {
+      var result = parseFloat(display.toString().slice(0,14));
+    } 
+    else {
+      var result = display;
+    }
     this.setState({
       display: result
     })
-    
   }
   
   render(){
